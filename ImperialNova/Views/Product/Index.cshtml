@@ -1,0 +1,676 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "Product";
+}
+
+<style>
+    .card {
+        margin-bottom: 20px;
+    }
+
+    #IconButtonEdit{
+      margin-left: 50px;
+    }
+
+    #IconButtonDel {
+        margin-left: 7px;
+    }
+   
+    #white{
+        color: white;
+
+    }
+
+    .leftSpace{
+        margin-left:2%;
+    }
+    .black{
+        color:Black;
+    }
+
+    .mainpic {
+        max-width: 30px; 
+        max-height: 30px;
+    }
+
+ </style>      
+<style type="text/css">
+    @@media (max-width: 767px) {
+        #mainheading {
+            text-align: center;
+        }
+
+        .col-lg-2,
+        .col-md-6,
+        .col-12 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #startdate{
+            margin-left: 0px;
+        }
+        .leftSpace {
+            display: none;
+        }
+    }
+    @@media (min-width: 992px) {
+        #mainheading {
+            text-align: left;
+            color: white;
+        }
+
+        .col-lg-2,
+        .col-md-6,
+        .col-12 {
+            text-align: left;
+            margin-bottom: 0;
+        }
+        #startdate{
+        margin-left: 20px;
+        }
+        .leftSpace {
+            margin-left: 2%;
+        }
+    }
+
+  
+</style>
+<div class="row">
+
+  
+    <div class="col-md-2">
+        <h1 class="black">Products</h1>
+    </div>
+   
+    
+   @* <div class="col-md-4">
+     <div class="row" style="margin-top:10px;">
+    <div class="col-md-6 col-12 text-md-end text-center mt-2 mt-md-0">
+        <button class="btn btn-sm btn-primary m-2" id="addProductid" onclick="createProduct();">+ New Product</button>
+    </div>
+        </div>
+    </div>*@
+
+</div>
+
+ <button class="btn btn-sm btn-primary m-2" id="addProductid" onclick="createProduct();">+ New Product</button>        
+
+<br /><br />
+<div class="row" id="ProductCardView">
+
+    
+</div>
+<nav id="paginationContainer">
+    <ul id="pagination" class="pagination justify-content-center"></ul>
+</nav>
+<div class="modal fade modal" id="createProductWindow">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-info modal-title text-black" id="Productheading">Add Product</h1>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeModal();"></button>
+                @* <button class="close text-danger" data-dismiss="modal">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form>
+                        <div class="form-group">
+                            <input type="hidden" id="popupId" class="form-control" disabled="disabled" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input  id="popupName" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Size</label>
+                            <input id="popupSize" class="form-control" autocomplete="off"/>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input   id="popupColor" class="form-control" autocomplete="off"/>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Original Cost</label>
+                            <input type="number" id="popupCost" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                         <div class="form-group">
+                            <label>Retail Price</label>
+                            <input type="number" id="popupRetailPrice" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control" name="customer" id="popupCategory" autocomplete="off">
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                <option class="dropdown-item" value="@category._Id">@category._CName</option>
+                            }
+                        </select>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input id="popupNotes" class="form-control" autocomplete="off" />
+                        </div>
+                       @* <div class="form-group">
+                            <label>Email</label>
+                            <input placeholder="E-mail" id="popupQuantity" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input placeholder="E-mail" id="popupQuantityIn" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input placeholder="E-mail" id="popupQuantityOut" class="form-control" autocomplete="off" />
+                        </div>*@
+                    </form>
+                </div>
+
+                
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="AddProductBTN" onclick="saveProduct();">Create</button>
+                <button class="btn btn-warning" id="UpdateProductBTN" onclick="updateProduct();" style="display:none">Update</button>
+                <button class="btn btn-danger" id="CloseProductBTN" onclick="closeModal();" style="display:none">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal" id="createProductDetailWindow">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-info modal-title text-black" id="ProductheadingDetails">Product Details</h1>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeDetailsModal();"></button>
+                @* <button class="close text-danger" data-dismiss="modal">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form>
+                        <div class="form-group">
+                            <input type="hidden" id="popupIdDetails" class="form-control" disabled="disabled" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input id="popupNameDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Size</label>
+                            <input id="popupSizeDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input id="popupColorDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Original Cost</label>
+                            <input type="number" id="popupCostDetails" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Retail Price</label>
+                            <input type="number" id="popupRetailPriceDetails" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                        <label>Category</label>
+                            <input id="popupCategoryDetails" class="form-control" autocomplete="off" />                    
+                        </div><br />
+                        <div class="form-group">
+                        <label>Quantity In</label>
+                            <input id="popupQuantityInDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                        <label>Quantity Out</label>
+                            <input id="popupQuantityOutDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Remaining Quantity</label>
+                            <input id="popupQuantityDetails" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input id="popupNotesDetails" class="form-control" autocomplete="off" />
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+@*                <button class="btn btn-primary" id="AddProductBTN" onclick="saveProduct();">Create</button>
+                <button class="btn btn-warning" id="UpdateProductBTN" onclick="updateProduct();" style="display:none">Update</button>*@
+                <button class="btn btn-danger" id="CloseProductBTN" onclick="closeDetailsModal();" style="display:none">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal" id="createProducteditWindow">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-info modal-title text-black" id="Productheadingedit">Product Details</h1>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeeditModal();"></button>
+                @* <button class="close text-danger" data-dismiss="modal">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form>
+                        <div class="form-group">
+                            <input type="hidden" id="popupIdedit" class="form-control" disabled="disabled" autocomplete="off" />
+                        </div>                        
+                        <div class="form-group">
+                            <label>Quantity In</label>
+                            <input id="popupQuantityInedit" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Quantity Out</label>
+                            <input id="popupQuantityOutedit" class="form-control" autocomplete="off" />
+                        </div><br />
+@*                        <div class="form-group">
+                            <label>Remaining Quantity</label>
+                            <input id="popupQuantityedit" class="form-control" autocomplete="off" />
+                        </div><br />*@
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input id="popupNameedit" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Size</label>
+                            <input id="popupSizeedit" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input id="popupColoredit" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Original Cost</label>
+                            <input type="number" id="popupCostedit" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Retail Price</label>
+                            <input type="number" id="popupRetailPriceedit" placeholder="$" class="form-control" autocomplete="off" />
+                        </div><br />
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select class="form-control" name="customer" id="popupCategoryedit" autocomplete="off">
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option class="dropdown-item" value="@category._Id">@category._CName</option>
+                                }
+                            </select>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input id="popupNotesedit" class="form-control" autocomplete="off" />
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="AddProductBTNedit" onclick="saveProduct();">Create</button>
+                <button class="btn btn-warning" id="UpdateProductBTNedit" onclick="updateProduct();" style="display:none">Update</button>
+                <button class="btn btn-danger" id="CloseProductBTNedit" onclick="closeeditModal();" style="display:none">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        
+        ProductShow();
+    });
+   
+    function ProductExport() {
+        var startingDate = $('#startingDate').val();
+        var endingDate = $('#endingDate').val();
+
+        if (startingDate === "" || endingDate === "") {
+            alert("Please enter both start date and end date.");
+            return;
+        }
+
+        $.ajax({
+            url: '/Product/ProductExport',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8;',
+            data: {
+                startingDate: startingDate,
+                endingDate: endingDate
+            },
+            success: function (result) {
+                var object = '';
+                var count = 0;
+                $.each(result, function (index, item) {
+                    object += '<div class="col-md-3">';
+                    object += '<div class="card">';
+                    object += '<div class="card-body">';
+                    object += '<div class="d-flex align-items-center">';
+                    object += '<img src="/Images/box.png" class="mainpic" style="width: 30px; height: 30px;" />';
+                    object += '<h5 class="card-title">' + item._Name + '</h5>';
+                    object += '</div>';
+                    object += '<p class="card-text">$' + item._RetailPrice + '</p>';
+                    object += '<a href="#" class="btn btn-primary" onclick="viewProduct(' + item._Id + ')"> + Details</a>';
+                    object += '<a href="#" id="IconButtonEdit" class="btn btn-primary fa-solid" onclick="editProduct(' + item._Id + ')"><i class="fa fa-pen" aria-hidden="true"></i></a>';
+                    object += '<a href="#"  id="IconButtonDel" class="btn btn-danger fa-solid" onclick="deleteProduct(' + item._Id + ' )"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                    object += '</div>';
+                    object += '</div>';
+                    object += '</div>';
+                    count++;
+                });
+                $('#ProductCardView').html(object);
+                if (count > 8) {
+                    pagination();
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function ProductShow() {
+        $.ajax({
+            url: '/Product/ProductIndex',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8;',
+
+            success: function (result) {
+                var object = '';
+                var count = 0;
+                $.each(result, function (index, item) {
+                    object += '<div class="col-sm-3">';
+                    object += '<div class="card">';
+                    object += '<div class="card-body">';
+                    object += '<div class="d-flex align-items-center">';
+                    object += '<img src="/Images/box.png" style="width: 30px; height: 30px;" />';
+                    object += '<h5 class="card-title">' + item._Name + '</h5>';
+                    object += '</div>';
+                    object += '<p class="card-text">$' + item._RetailPrice + '</p>';
+                    object += '<a href="#" class="btn btn-primary" onclick="viewProduct(' + item._Id + ')"> + Details</a>';
+                    object += '<a href="#" id="IconButtonEdit" class="btn btn-primary fa-solid" onclick="editProduct(' + item._Id + ')"><i class="fa fa-pen" aria-hidden="true"></i></a>';
+                    object += '<a href="#"  id="IconButtonDel" class="btn btn-danger fa-solid" onclick="deleteProduct(' + item._Id + ' )"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                    object += '</div>';
+                    object += '</div>';
+                    object += '</div>';
+                    count++;
+                });
+                $('#ProductCardView').html(object);
+                if (count > 8) {
+                    pagination();
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function pagination() {
+        var table = $('#myTable');
+        var rowsPerPage = 5; // Number of rows to show per page
+
+        var totalRows = table.find('tbody tr').length;
+        if (totalRows <= rowsPerPage) {
+            // No need for pagination if the total rows do not exceed the limit
+            return;
+        }
+
+        var totalPages = Math.ceil(totalRows / rowsPerPage);
+        var currentPage = 1;
+
+        // Clear existing pagination links
+        $('#pagination').empty();
+
+        // Show "Previous" button with arrow icon
+        $('#pagination').append('<li class="page-item" id="previousPage"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&lt;</span></a></li>');
+
+        // Show "Next" button with arrow icon
+        $('#pagination').append('<li class="page-item" id="nextPage"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>');
+
+        // Show the first page by default
+        showPage(currentPage);
+
+        // Handle click event on "Previous" and "Next" buttons
+        $('#previousPage').on('click', function () {
+            if (currentPage > 1) {
+                showPage(--currentPage);
+            }
+        });
+
+        $('#nextPage').on('click', function () {
+            if (currentPage < totalPages) {
+                showPage(++currentPage);
+            }
+        });
+    }
+    $('#addProductid').click(function () {
+        $('#AddProductBTN').show();
+        $('#UpdateProductBTN').hide();
+        $('#Productheading').text('Add Product');
+        createProduct();
+    });
+
+    function createProduct() {
+        cleartextbox();
+        $('#createProductWindow').modal('show');
+    }
+    function createProductDetails() {
+        cleartextbox();
+        $('#createProductDetailWindow').modal('show');
+    }
+    function createProductedit() {
+        cleartextbox();
+        $('#createProducteditWindow').modal('show');
+    }
+
+    function closeModal() {
+        $('#createProductWindow').modal('hide');
+    }
+    function closeDetailsModal() {
+        $('#createProductDetailWindow').modal('hide');
+    }
+    function closeeditModal() {
+        $('#createProducteditWindow').modal('hide');
+    }
+
+    function cleartextbox() {
+        $('#popupName').val('');
+        $('#popupSize').val('');
+        $('#popupColor').val('');
+        $('#popupCost').val('');
+        $('#popupRetailPrice').val('');
+    }
+
+    function saveProduct() {
+        var productName = $("#popupName").val();
+        var productSize = $("#popupSize").val();
+        var productColor = $("#popupColor").val();
+        var productCost = parseFloat($("#popupCost").val());
+        var productRetailPrice = parseFloat($("#popupRetailPrice").val());
+        var productCategoryId = $("#popupCategory").val();
+        var notes = $("#popupNotes").val();
+        if (
+            productName.trim() === "" ||
+            productSize.trim() === "" ||
+            productColor.trim() === "" ||
+            isNaN(productCost) ||
+            isNaN(productRetailPrice) ||
+            productCategoryId === null
+        ) {
+            alert("Please fill in all the fields.");
+            return;
+        }
+        $.ajax({
+            url: '/Product/Create',
+            type: 'POST',
+            data: {
+                _Name: productName,
+                _Size: productSize,
+                _Color: productColor,
+                _Cost: productCost,
+                _RetailPrice: productRetailPrice,
+                _CategoryId: parseInt(productCategoryId),
+                _Notes: notes
+            },
+            success: function (response) {
+
+                closeModal();
+                ProductShow();
+            },
+            error: function (error) {
+                console.error('Error adding product:', error);
+            }
+        });
+    }
+
+    function deleteProduct(id) {
+        if (confirm('Are you sure you want to remove this Product?')) {
+            $.ajax({
+                url: '/Product/Delete?id=' + id,
+                success: function () {
+                    ProductShow();
+                },
+                error: function () {
+
+                }
+            });
+        }
+    }
+
+    function viewProduct(id) {
+        $.ajax({
+            url: '/Product/Edit?id=' + id,
+            type: 'GET',
+            success: function (response) {
+                createProductDetails();
+
+                var productData = response.ProductData;
+                var categoryData = response.CategoryData;
+
+                    $('#popupIdDetails').val(response.productData._Id);
+                    $('#popupNameDetails').val(response.productData._Name);
+                    $('#popupSizeDetails').val(response.productData._Size);
+                    $('#popupColorDetails').val(response.productData._Color);
+                    $('#popupCostDetails').val(response.productData._Cost);
+                    $('#popupRetailPriceDetails').val(response.productData._RetailPrice);
+                    $('#popupQuantityInDetails').val(response.productData._QuantityIn);
+                    $('#popupQuantityOutDetails').val(response.productData._QuantityOut);
+                    $('#popupQuantityDetails').val(response.productData._Quantity);
+                    $('#popupNotesDetails').val(response.productData._Notes);
+                    $("#popupCategoryDetails").val(response.categoryData._CName);
+                    $('#AddProductBTN').hide();
+                    $('#UpdateProductBTN').hide();
+                    $('#CloseProductBTN').show();
+                    $('#ProductheadingDetails').text('Product Information');
+                    ProductShow();
+
+            },
+            error: function () {
+           
+            }
+        });
+    }
+
+    function editProduct(id) {
+        $.ajax({
+            url: '/Product/Edit?id=' + id,
+            type: 'GET',
+            success: function (response) {
+                createProductedit();
+
+                var productData = response.ProductData;
+                var categoryData = response.CategoryData;
+
+                $('#popupIdedit').val(response.productData._Id);
+                $('#popupNameedit').val(response.productData._Name);
+                $('#popupSizeedit').val(response.productData._Size);
+                $('#popupColoredit').val(response.productData._Color);
+                $('#popupCostedit').val(response.productData._Cost);
+                $('#popupRetailPriceedit').val(response.productData._RetailPrice);
+                $('#popupQuantityInedit').val(response.productData._QuantityIn);
+                $('#popupQuantityOutedit').val(response.productData._QuantityOut);
+                $('#popupQuantityedit').val(response.productData._Quantity);
+                $('#popupNotesedit').val(response.productData._Notes);
+                var selectField = $("#popupCategoryedit");
+                selectField.empty();
+                selectField.append($('<option></option>').attr('value', response.categoryData._Id).text(response.categoryData._CName));
+
+                $.ajax({                 
+                    url: '/Product/CategoryIndex', 
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (categories) {
+                        $.each(categories, function (index, category) {
+                            if (category._Id !== response.categoryData._Id) {
+                                selectField.append($('<option></option>').attr('value', category._Id).text(category._CName));
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error loading categories:', error);
+                    }
+                });
+                $('#AddProductBTNedit').hide();
+                $('#UpdateProductBTNedit').show();
+                $('#CloseProductBTNedit').show();
+                $('#Productheadingedit').text('Edit Information');
+                ProductShow();
+            }, 
+            error: function () {
+       
+            }
+        });
+    }
+
+    function updateProduct() {
+        var id = $('#popupIdedit').val();
+        var name = $('#popupNameedit').val();
+        var size = $('#popupSizeedit').val();
+        var color = $('#popupColoredit').val();
+        var cost = $('#popupCostedit').val();
+        var retailPrice = $('#popupRetailPriceedit').val();
+        var productCategoryId = $("#popupCategoryedit").val();
+        var quantity = $('#popupQuantityedit').val();
+        var quantityin = $('#popupQuantityInedit').val();
+        var quantityout = $('#popupQuantityOutedit').val();
+        var notes = $('#popupNotesedit').val();
+
+        if (parseInt(quantityout) > parseInt(quantityin)) {
+            alert("Only " + quantityin + "is available.");
+            return;
+        }
+        $.ajax({
+            url: '/Product/Update',
+            type: 'POST',
+            data: {
+                _id: id,
+                _Name: name,
+                _Size: size,
+                _Color: color,
+                _Cost: cost,
+                _RetailPrice: retailPrice,
+                _CategoryId: parseInt(productCategoryId),
+                _QuantityIn: quantityin,
+                _QuantityOut: quantityout,
+                _Quantity: quantity,
+                _Notes: notes
+            },
+            success: function () {
+                cleartextbox();
+                ProductShow();
+                closeeditModal();
+            },
+            error: function () {
+                // Handle error
+            }
+        });
+    }
+
+
+</script>

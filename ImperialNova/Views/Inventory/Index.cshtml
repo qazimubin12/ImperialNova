@@ -1,0 +1,514 @@
+﻿
+<div class="justify-content-center">
+    <h1>Inventory</h1>
+</div>
+<hr />
+<div class="row justify-content-start">
+    <div class="col-md-auto">
+        <a href="#" id="AddStock" class="btn btn-primary fa-solid" onclick="createProduct();">Add Stock</a>
+    </div>
+    <div class="col-md-auto">
+        <a href="#" id="RemoveStock" class="btn btn-danger fa-solid" onclick="createOutProduct();">Stock Out</a>
+    </div>
+    <div class="col-md-auto">
+        <a href="#" id="Complete" class="btn btn-danger fa-solid" onclick="completeOrder();">Complete Order</a>
+    </div>
+    <div class="col-md-auto">
+        <label for="popupadminRemove" class="mr-2">Select Location:</label>
+    </div>
+        <div class="col-md-3">
+        <select class="form-control" name="customer" id="popupLocation" autocomplete="off">
+            @foreach (var locations in ViewBag.Locations)
+            {
+                <option class="dropdown-item" value="@locations._LocationName">@locations._LocationName</option>
+            }
+        </select>
+    </div>
+</div>
+<br />
+
+<div class="table_display">
+    <table class="table table-bordered" id="myTable">
+        <thead>
+            <!-- Remove the "black" class from the table header -->
+            <tr class="text-center">
+                <th>Name</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Quantity Available</th>
+            </tr>
+        </thead>
+        <tbody class="text-center" id="table_data">
+        </tbody>
+    </table>
+    <nav id="paginationContainer">
+        <ul id="pagination" class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" href="#" id="previousPage" aria-label="Previous">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" id="nextPage" aria-label="Next">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div class="modal fade modal" id="createProductWindow">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-info modal-title text-black" id="Productheadingedit">Add Stock</h1>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeModal();"></button>
+                @* <button class="close text-danger" data-dismiss="modal">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form>                      
+                        <div class="form-group">
+                            <label>Products</label>
+                            <select class="form-control" name="customer" id="popupProducts" autocomplete="off">
+                                @foreach (var product in ViewBag.Products)
+                                {
+                                    <option class="dropdown-item" value="@product._Id">@product._Name, (@product._Color), size = @product._Size </option>
+                                }
+                            </select>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="popupQuantity" class="form-control" autocomplete="off" />
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="AddProductBTNedit" onclick="AddStock('StockIn');">Add Product</button>
+                <button class="btn btn-warning" id="UpdateProductBTNedit" onclick="updateProduct();" style="display:none">Update</button>
+                <button class="btn btn-danger" id="CloseProductBTNedit" onclick="closeModal();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal" id="createProductOutWindow">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-info modal-title text-black" id="ProductheadingeditOut">Stock Out</h1>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeOutModal();"></button>
+                @* <button class="close text-danger" data-dismiss="modal">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div>
+                    <form>
+                        <div class="form-group">
+                            <label>Products</label>
+                            <select class="form-control" name="customer" id="popupProductsOut" autocomplete="off">
+                                @foreach (var product in ViewBag.Products)
+                                {
+                                    <option class="dropdown-item" value="@product._Id">@product._Name, (@product._Color), size = @product._Size (Available: @product._Quantity units) </option>
+                                }
+                            </select>
+                        </div><br />
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="popupQuantityOut" class="form-control" autocomplete="off" />
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="AddProductBTNedit" onclick="RemoveStock('StockOut');">Product Out</button>
+                <button class="btn btn-warning" id="UpdateProductBTNedit" onclick="updateProduct();" style="display:none">Update</button>
+                <button class="btn btn-danger" id="CloseProductBTNedit" onclick="closeOutModal();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ProductShow();
+    });
+    function ProductShow() {
+     
+        $.ajax({
+
+            url: '/Product/ProductIndex',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8;',
+            success: function (result) {
+                var object = '';
+                var count = 0;
+                $.each(result, function (index, item) {
+                    object += '<tr>';
+                    object += '<td>' + item._Name + '</td>';
+                    object += '<td>' + item._Size + '</td>';
+                    object += '<td>' + item._Color + '</td>';
+                    object += '<td>' + item._Quantity + '</td>';                  
+                    //object += '<td><a href="#" id="IconButtonEdit" class="btn btn-primary fa-solid" onclick="editProduct(' + item._id + ')"><i class="fa fa-pen" aria-hidden="true"></i></a><a href="#"  id="IconButtonDel" class="btn btn-danger fa-solid" onclick="deleteProduct(' + item._id + ' )"><i class="fa fa-trash" aria-hidden="true"></i></a></td>';
+                    object += '</tr>';
+                    count++;
+                });
+                $('#table_data').html(object);
+                if (count > 6) {
+                    pagination();
+                }
+
+            },
+            error: function () {
+
+            }
+
+        });
+
+    }
+    function pagination() {
+        var table = $('#myTable');
+        var rowsPerPage = 5; // Number of rows to show per page
+
+        var totalRows = table.find('tbody tr').length;
+        if (totalRows <= rowsPerPage) {
+            // No need for pagination if the total rows do not exceed the limit
+            return;
+        }
+
+        var totalPages = Math.ceil(totalRows / rowsPerPage);
+        var currentPage = 1;
+
+        // Clear existing pagination links
+        $('#pagination').empty();
+
+        // Show "Previous" button with arrow icon
+        $('#pagination').append('<li class="page-item" id="previousPage"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&lt;</span></a></li>');
+
+        // Show "Next" button with arrow icon
+        $('#pagination').append('<li class="page-item" id="nextPage"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>');
+
+        // Show the first page by default
+        showPage(currentPage);
+
+        // Handle click event on "Previous" and "Next" buttons
+        $('#previousPage').on('click', function () {
+            if (currentPage > 1) {
+                showPage(--currentPage);
+            }
+        });
+
+        $('#nextPage').on('click', function () {
+            if (currentPage < totalPages) {
+                showPage(++currentPage);
+            }
+        });
+
+        function showPage(pageNumber) {
+            var startIndex = (pageNumber - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+            table.find('tbody tr').hide().slice(startIndex, endIndex).show();
+
+            // Update active state of pagination buttons
+            $('#previousPage').toggleClass('disabled', currentPage === 1);
+            $('#nextPage').toggleClass('disabled', currentPage === totalPages);
+        }
+    }
+    function closeModal() {
+        $('#createProductWindow').modal('hide');
+    }
+    function createProduct() {
+        cleartextbox();
+        $('#createProductWindow').modal('show');
+    }
+    function cleartextbox() {
+        $('#popupQuantity').val('');
+    }
+    function closeOutModal() {
+        $('#createProductOutWindow').modal('hide');
+    }
+    function createOutProduct() {
+        cleartextOutbox();
+        $('#createProductOutWindow').modal('show');
+    }
+    function cleartextOutbox() {
+        $('#popupQuantityOut').val('');      
+    }
+
+    var selectedProducts = [];
+
+    var Id = null;
+    var Name = null;
+    var Size = null;
+    var Color = null;
+    var Cost = null;
+    var RetailPrice = null;
+    var QuantityIn = null;
+    var QuantityOut = null;
+    var Notes = null;
+    var ExportDate = null;
+    var CategoryId = null;
+
+    function editProduct(id,newquantity,order) {
+
+    $.ajax({
+        url: '/Product/Edit?id=' + id,
+        type: 'GET',
+        success: function (response) {
+            
+
+            var productData = response.ProductData;
+            var categoryData = response.CategoryData;
+
+            Id = response.productData._Id;
+            Name = response.productData._Name;
+            Size = response.productData._Size;
+            Color = response.productData._Color;
+            Cost = response.productData._Cost;
+            RetailPrice = response.productData._RetailPrice;
+            QuantityIn = response.productData._QuantityIn;
+            QuantityOut = response.productData._QuantityOut;
+            Notes = response.productData._Notes;
+            CategoryId = response.categoryData._Id;
+                updateProduct(order, newquantity);
+        },
+        error: function (error) {
+
+                console.log("Error:", error);
+        }
+            
+      
+    });
+        
+   }
+    var userId = '@ViewBag.UserId';
+    var userFullName;
+    var userEmail;
+
+    // Function to fetch user by ID and get the user name
+    function fetchUserById(userId) {
+
+        return $.ajax({
+            url: `/Inventory/GetUserById/${userId}`,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8;'
+        });
+    }
+
+    // Function to fetch user email by ID and get the email
+    function fetchUserByIdEmail(userId) {
+
+        return $.ajax({
+            url: `/Inventory/GetUserByIdEmail/${userId}`,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8;'
+        });
+    }
+
+    function updateProduct(order,newquantity) {
+        var finalquantity = parseFloat(newquantity);
+        if (order === "StockIn") {
+            var id = Id;
+            var name = Name;
+            var size = Size;
+            var color = Color;
+            var cost = Cost;
+            var retailPrice = RetailPrice;
+            var productCategoryId = CategoryId;
+            var quantityin = QuantityIn + finalquantity;
+            var quantityout = QuantityOut;
+            var notes = Notes;
+        } else if (order === "StockOut") {
+            var id = Id;
+            var name = Name;
+            var size = Size;
+            var color = Color;
+            var cost = Cost;
+            var retailPrice = RetailPrice;
+            var productCategoryId = CategoryId;
+            var quantityin = QuantityIn;
+            var quantityout = QuantityOut + finalquantity;
+            var notes = Notes;
+        }
+       
+        if (parseInt(quantityout) > parseInt(quantityin)) {
+            alert("Only " + quantityin + "is available.");
+            return;
+        }
+        $.ajax({
+            url: '/Product/Update',
+            type: 'POST',
+            data: {
+                _id: id,
+                _Name: name,
+                _Size: size,
+                _Color: color,
+                _Cost: cost,
+                _RetailPrice: retailPrice,
+                _CategoryId: parseInt(productCategoryId),
+                _QuantityIn: quantityin,
+                _QuantityOut: quantityout,
+                _Notes: notes
+            },
+            success: function () {
+                ProductShow();
+            },
+            error: function () {
+                // Handle error
+            }
+
+        });
+        $.when(
+            fetchUserById(userId),
+            fetchUserByIdEmail(userId)
+        ).done(function (userResult, emailResult) {
+            // Access the data returned by each AJAX request using the .then() function
+            userFullName = userResult[0];
+            userEmail = emailResult[0];
+
+            $.ajax({
+
+                url: '/Inventory/Create',
+                type: 'POST',
+                data: {
+                    _ProductId: id,
+                    _Name: name,
+                    _Size: size,
+                    _Color: color,
+                    _Cost: cost,
+                    _RetailPrice: retailPrice,
+                    _CategoryId: parseInt(productCategoryId),
+                    _QuantityIn: quantityin,
+                    _QuantityOut: quantityout,
+                    _Notes: notes,
+                    _Action: order,
+                    _UserId: userId,
+                    _UserFullName: userFullName,
+                    _UserEmail: userEmail
+
+                },
+                success: function () {
+
+                },
+                error: function () {
+                    // Handle error
+                }
+            });
+            $.ajax({
+
+                url: '/Inventory/CreateTemp',
+                type: 'POST',
+                data: {
+                    _ProductId: id,
+                    _Name: name,
+                    _Size: size,
+                    _Color: color,
+                    _Cost: cost,
+                    _RetailPrice: retailPrice,
+                    _CategoryId: parseInt(productCategoryId),
+                    _QuantityIn: quantityin,
+                    _QuantityOut: quantityout,
+                    _Notes: notes,
+                    _Action: order,
+                    _UserId: userId,
+                    _UserFullName: userFullName,
+                    _UserEmail: userEmail
+
+                },
+                success: function () {
+
+                },
+                error: function () {
+                    // Handle error
+                }
+            });
+        }).fail(function () {
+            // Handle error if necessary
+            alert('Error fetching user data.');
+        });
+       
+       
+    }
+    var Inputquantity;
+    var stockoption;
+    function AddStock(order) {
+        
+        var selectedValues = parseInt($("#popupProducts").val());
+        Inputquantity = parseInt($("#popupQuantity").val());
+
+      stockoption = order;
+        if (isNaN(Inputquantity) || Inputquantity <= 0) {
+            alert("Please enter a valid quantity greater than zero.");
+            return;
+        }
+
+        var productWithQuantity = {
+            _productId: selectedValues,
+            _ToBeChangedQuantity: Inputquantity
+        };
+        selectedProducts.push(productWithQuantity);
+        cleartextbox();
+    }
+    function RemoveStock(order) {
+
+        var selectedValues = parseInt($("#popupProductsOut").val());
+        Inputquantity = parseInt($("#popupQuantityOut").val());
+ 
+        stockoption = order;
+        if (isNaN(Inputquantity) || Inputquantity <= 0) {
+            alert("Please enter a valid quantity greater than zero.");
+            return;
+        }
+
+        var productWithQuantity = {
+            _productId: selectedValues,
+            _ToBeChangedQuantity: Inputquantity
+        };
+        selectedProducts.push(productWithQuantity);
+        console.log(selectedProducts);
+        cleartextOutbox();
+    }
+    function accessProductIds(order) {
+
+        selectedProducts.forEach(function (product) {
+            var productId = product._productId;
+            var newQuantity = product._ToBeChangedQuantity;
+            editProduct(productId, newQuantity, order);
+        });
+    }
+    function completeOrder() {
+
+      accessProductIds(stockoption);
+        if (selectedProducts.length === 0) {
+            alert("Please add products before completing the order.");
+            return;
+        }
+        var selectedLocation = $("#popupLocation").val();
+
+        $.ajax({
+            url: "/Inventory/AddStock",
+            type: "POST",
+            data: {
+                selectedProducts: selectedProducts,
+                selectedLocation: selectedLocation // Include selected location
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log("Order completed successfully:", response);
+
+                selectedProducts = [];
+                location.reload();
+            },
+            error: function (error) {
+                console.log("Error:", error);
+            }
+        });
+        
+    }
+
+
+</script>

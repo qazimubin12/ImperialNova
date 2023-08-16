@@ -1,0 +1,229 @@
+﻿@model DeliveryFormModel
+
+<h1>Delivery Form</h1>
+<br />
+<form id="deliveryForm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_SlaesPerson">Sales Person:</label>
+                <input type="text" class="form-control" id="_SlaesPerson" name="_SlaesPerson" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_Date">Date:</label>
+                <input type="date" class="form-control" id="_Date" name="_Date" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_CustomerName">Customer Name:</label>
+                <input type="text" class="form-control" id="_CustomerName" name="_CustomerName" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_Address">Address:</label>
+                <input type="text" class="form-control" id="_Address" name="_Address" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_Country">Country:</label>
+                <input type="text" class="form-control" id="_Country" name="_Country" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_ContactNo">Contact No:</label>
+                <input type="tel" class="form-control" id="_ContactNo" name="_ContactNo" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_Email">Email:</label>
+                <input type="email" class="form-control" id="_Email" name="_Email" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_Note">Note:</label>
+                <textarea class="form-control" id="_Note" name="_Note"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <div id="productsContainer">
+        <div class="form-group product-row">
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control product-name" name="_Products[0]._ProductName" placeholder="Product" required>
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control product-quantity" name="_Products[0]._ProductQuantity" placeholder="Quantity" required>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+    
+    <button type="button" class="btn btn-primary" id="addProduct">Add Product</button>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_RequestedDate">Requested Date:</label>
+                <input type="date" class="form-control" id="_RequestedDate" name="_RequestedDate" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_TotalAmount">Total Amount:</label>
+                <input type="number" class="form-control" id="_TotalAmount" name="_TotalAmount" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="_PayMethod">Payment Method:</label>
+        <select class="form-control" id="_PayMethod" name="_PayMethod" required>
+            <option value="Card">Card</option>
+            <option value="Cash">Cash</option>
+            <option value="Finance">Finance</option>
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_AmountPaid">Amount Paid:</label>
+                <input type="number" class="form-control" id="_AmountPaid" name="_AmountPaid" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="_AmountInBalance">Amount In Balance:</label>
+                <input type="number" class="form-control" id="_AmountInBalance" name="_AmountInBalance" required>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <div class="form-group">
+        <input type="checkbox" id="termsAndConditions" name="termsAndConditions" required>
+
+        <label for="termsAndConditions">I agree to terms and conditions</label>
+    </div>
+
+    <div class="form-group">
+        <input type="checkbox" id="acceptanceConfirmation" name="acceptanceConfirmation" required>
+
+        <label for="acceptanceConfirmation">I confirm acceptance and completion of the contract and satisfactory installation of the goods.</label>
+    </div>
+
+    <div class="form-group">
+        <input type="checkbox" id="authorizePayment" name="authorizePayment" required>
+
+        <label for="authorizePayment">I am happy to confirm the above and hereby authorise you to pay IMPERIAL TEAM LIMITED/IMPERIAL BAMBOO.</label>
+    </div>
+
+    <div class="form-group">
+        <input type="checkbox" id="goodsReceivedConfirmation" name="goodsReceivedConfirmation" required>
+
+        <label for="goodsReceivedConfirmation">I can confirm that the goods have been received and are to my satisfaction.</label>
+    </div>
+
+    <div class="form-group">
+        <input type="checkbox" id="financeApplicationConfirmation" name="financeApplicationConfirmation" required>
+
+        <label for="financeApplicationConfirmation">I can confirm that the details entered upon my Finance Application are true and correct and I am not aware of any change in circumstances that would affect my ability to repay this loan.</label>
+    </div>
+
+    <div class="form-group">
+        <input type="checkbox" id="creditAgreementConfirmation" name="creditAgreementConfirmation" required>
+
+        <label for="creditAgreementConfirmation">I understand that I will be bound by the terms and conditions of my credit agreement, a copy of which I have received, and I must pay a minimum monthly repayment by direct debit as stated in my credit agreement.</label>
+    </div>
+
+    <div class="form-group">
+        <label for="satisfactionNoteConfirmation">PLEASE NOTE: THIS SATISFACTION NOTE IS TO BE SIGNED ONLY BY THE PERSON NAMED ON THE CREDIT AGREEMENT.</label>
+    </div>
+
+
+    <button type="button" class="btn btn-primary" id="SubmitForm">Submit</button>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $("#addProduct").click(function () {
+            var currentIndex = $(".product-row").length;
+            var newProductRow = `
+                <div class="form-group product-row">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control product-name" name="_Products[${currentIndex}]._ProductName" placeholder="Product">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control product-quantity" name="_Products[${currentIndex}]._ProductQuantity" placeholder="Quantity">
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-danger remove-product">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            `;
+
+            $("#productsContainer").append(newProductRow);
+        });
+
+        $(document).on("click", ".remove-product", function () {
+            $(this).closest(".product-row").remove();
+        });
+
+        $("#SubmitForm").click(function () {
+            var requiredFields = $('.form-control[required]');
+            var emptyFields = requiredFields.filter(function () {
+                return $(this).val().trim() === '';
+            });
+
+            if (emptyFields.length > 0) {
+                alert('Please fill in all required fields.');
+                return; // Stop form submission
+            }
+            var formData = $('#deliveryForm').serialize();
+            // Send AJAX request
+            $.ajax({
+                url: '@Url.Action("SubmitDeliveryForm", "DeliveryForm")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    debugger
+                    if (response.success) {
+                        var orderId = response._id; // Assuming you receive the order ID in the JSON response
+                        window.location.href = '@Url.Action("Invoice", "DeliveryForm")' + '?id=' + orderId;
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while submitting the form.');
+                }
+            });
+        });
+    });
+
+        
+   
+</script>
